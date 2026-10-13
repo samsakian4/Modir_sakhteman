@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>شش‌دنگ</title>
+<meta name="theme-color" content="#E3E8F0">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+:root{
+  --bg:#E3E8F0;
+  --paper:#E3E8F0;
+  --card:#E3E8F0;
+  --ink:#26334D;
+  --ink-soft:#46536F;
+  --ink-faint:#5E6B87;
+  --line:#CBD3E1;
+  --primary:#4C74B7;
+  --primary-light:#6E94D2;
+  --primary-dark:#35588F;
+  --accent:#8A5E0B;
+  --accent-soft:#F6E8BE;
+  --danger:#A63D36;
+  --danger-soft:#F4DCDA;
+  --success:#2F7A52;
+  --success-soft:#D4EADB;
+  --radius:22px;
+  --radius-sm:16px;
+  --sh-dark:rgba(150,165,193,.62);
+  --sh-light:rgba(255,255,255,.95);
+  --raised:7px 7px 15px var(--sh-dark), -7px -7px 15px var(--sh-light);
+  --raised-sm:4px 4px 9px var(--sh-dark), -4px -4px 9px var(--sh-light);
+  --inset:inset 4px 4px 8px var(--sh-dark), inset -4px -4px 8px var(--sh-light);
+  --inset-sm:inset 2px 2px 5px var(--sh-dark), inset -2px -2px 5px var(--sh-light);
+  --shadow:var(--raised);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0; padding:0; height:100%;}
+body{
+  font-family:'Vazirmatn', Tahoma, sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  direction:rtl;
+  -webkit-font-smoothing:antialiased;
+}
+#app{max-width:480px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; background:var(--bg); position:relative;}
+button{font-family:inherit; cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{outline:2px solid var(--primary); outline-offset:2px;}
+
+/* header */
+.topbar{
+  position:sticky; top:0; z-index:20;
+  background:var(--bg);
+  color:var(--ink);
+  padding:18px 18px 16px;
+  box-shadow:0 8px 14px -8px var(--sh-dark);
+}
+.topbar-row{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+.topbar-title{font-size:18px; font-weight:700; margin:0; color:var(--ink);}
+.topbar-sub{font-size:12.5px; color:var(--ink-faint); margin:2px 0 0;}
+.icon-btn{
+  width:40px; height:40px; border-radius:50%; border:none;
+  background:var(--bg); color:var(--primary-dark);
+  box-shadow:var(--raised-sm);
+  display:flex; align-items:center; justify-content:center;
+}
+.icon-btn:active{box-shadow:var(--inset-sm);}
+
+.back-row{display:flex; align-items:center; gap:10px;}
+.back-row button{background:var(--bg); border:none; color:var(--primary-dark); width:40px; height:40px; border-radius:50%; box-shadow:var(--raised-sm); display:flex; align-items:center; justify-content:center; padding:0;}
+.back-row button:active{box-shadow:var(--inset-sm);}
+
+/* content */
+.content{flex:1; padding:20px 18px 110px; overflow-y:auto;}
+.page{display:none;}
+.page.active{display:block;}
+
+/* dashboard hero */
+.hero{
+  background:linear-gradient(145deg, var(--primary-light), var(--primary));
+  color:#fff;
+  border-radius:var(--radius);
+  padding:22px;
+  margin-bottom:20px;
+  box-shadow:var(--raised);
+}
+.hero-label{font-size:12.5px; color:rgba(255,255,255,.88); margin:0 0 6px;}
+.hero-amount{font-size:30px; font-weight:700; margin:0; letter-spacing:.3px; text-shadow:0 2px 4px rgba(38,60,100,.35);}
+.hero-note{font-size:12px; color:rgba(255,255,255,.88); margin:8px 0 0;}
+
+.stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;}
+.stat-card{background:var(--card); border-radius:var(--radius-sm); padding:14px 16px; box-shadow:var(--raised-sm);}
+.stat-card .lbl{font-size:11.5px; color:var(--ink-faint); margin:0 0 4px;}
+.stat-card .val{font-size:18px; font-weight:700; margin:0; color:var(--primary-dark);}
+
+.section-head{display:flex; align-items:center; justify-content:space-between; margin:24px 0 14px;}
+.section-head h3{font-size:14.5px; font-weight:700; margin:0; color:var(--ink);}
+.link-btn{background:none; border:none; color:var(--primary-dark); font-size:12.5px; font-weight:600; padding:4px;}
+
+.card-list{display:flex; flex-direction:column; gap:14px;}
+
+/* generic row card */
+.row-card{
+  background:var(--card); border-radius:var(--radius-sm); box-shadow:var(--raised-sm);
+  padding:14px 16px; display:flex; align-items:center; justify-content:space-between; gap:10px;
+}
+.row-card:active{box-shadow:var(--inset-sm);}
+.row-main{min-width:0; flex:1;}
+.row-title{font-size:14px; font-weight:600; margin:0 0 3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.row-sub{font-size:12px; color:var(--ink-soft); margin:0;}
+.row-right{text-align:left; flex-shrink:0;}
+.row-amount{font-size:14px; font-weight:700; margin:0; color:var(--primary-dark);}
+.row-badge{display:inline-block; font-size:10.5px; font-weight:600; padding:3px 10px; border-radius:20px; margin-top:4px;}
+.badge-paid{background:var(--success-soft); color:var(--success);}
+.badge-partial{background:var(--accent-soft); color:var(--accent);}
+.badge-due{background:var(--danger-soft); color:var(--danger);}
+
+.empty{
+  text-align:center; padding:30px 16px; color:var(--ink-faint); font-size:13px;
+  background:var(--card); border-radius:var(--radius-sm); box-shadow:var(--inset);
+}
+
+/* fab */
+.fab{
+  position:fixed; bottom:84px; left:0; right:0; margin:0 auto;
+  width:calc(100% - 36px); max-width:444px;
+}
+.fab-inner{width:100%;}
+.fab-btn{
+  width:100%; background:linear-gradient(145deg, var(--primary-light), var(--primary)); color:#fff; border:none; border-radius:18px;
+  padding:14px; font-size:14px; font-weight:600; box-shadow:var(--raised);
+  display:flex; align-items:center; justify-content:center; gap:6px;
+}
+.fab-btn:active{background:var(--primary); box-shadow:inset 4px 4px 9px rgba(30,55,100,.5), inset -3px -3px 7px rgba(140,175,230,.5);}
+
+/* bottom nav */
+.bottomnav{
+  position:sticky; bottom:0; z-index:20;
+  background:var(--bg); border-radius:24px 24px 0 0;
+  box-shadow:0 -6px 14px -4px var(--sh-dark), 0 -2px 6px var(--sh-light);
+  display:flex; gap:4px; padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+}
+.navbtn{
+  flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:7px 2px; color:var(--ink-faint); font-size:10.5px; font-weight:500; border-radius:16px;
+}
+.navbtn.active{color:var(--primary-dark); font-weight:700; box-shadow:var(--inset-sm);}
+.navbtn svg{width:21px; height:21px;}
+
+/* forms */
+.field{margin-bottom:16px;}
+.field label{display:block; font-size:12.5px; color:var(--ink-soft); margin-bottom:7px; font-weight:500;}
+.field input, .field select, .field textarea{
+  width:100%; border:none; background:var(--bg); border-radius:14px;
+  box-shadow:var(--inset);
+  padding:12px 14px; font-size:14px; color:var(--ink);
+}
+.field textarea{resize:vertical; min-height:60px;}
+.field input:focus, .field select:focus, .field textarea:focus{outline:2px solid var(--primary); outline-offset:2px;}
+.field-row{display:flex; gap:12px;}
+.field-row .field{flex:1;}
+.field-error{color:var(--danger); font-size:11.5px; margin-top:5px;}
+
+.seg{display:flex; background:var(--bg); border-radius:16px; box-shadow:var(--inset); padding:5px; gap:5px;}
+.seg button{flex:1; border:none; background:none; padding:9px 4px; border-radius:12px; font-size:12.5px; color:var(--ink-soft); font-weight:500;}
+.seg button.active{background:var(--bg); color:var(--primary-dark); font-weight:700; box-shadow:var(--raised-sm);}
+
+/* overlay / sheet */
+.overlay{
+  position:fixed; inset:0; background:rgba(38,51,77,.38); z-index:50;
+  display:none; align-items:flex-end; justify-content:center;
+}
+.overlay.open{display:flex;}
+.sheet{
+  background:var(--bg); width:100%; max-width:480px; border-radius:28px 28px 0 0;
+  max-height:88vh; overflow-y:auto; padding:6px 20px 28px;
+  box-shadow:0 -8px 24px rgba(38,51,77,.18);
+  animation:sheetup .22s ease-out;
+}
+@keyframes sheetup{from{transform:translateY(24px); opacity:.4;} to{transform:translateY(0); opacity:1;}}
+.sheet-handle{width:44px; height:6px; background:var(--bg); box-shadow:var(--inset-sm); border-radius:6px; margin:10px auto 16px;}
+.sheet-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;}
+.sheet-head h2{font-size:16px; margin:0; font-weight:700;}
+.sheet-close{background:none; border:none; color:var(--ink-soft); padding:4px;}
+
+.btn-primary{
+  width:100%; background:linear-gradient(145deg, var(--primary-light), var(--primary)); color:#fff; border:none; border-radius:16px;
+  padding:14px; font-size:14px; font-weight:600; margin-top:8px; box-shadow:var(--raised-sm);
+}
+.btn-primary:active{background:var(--primary); box-shadow:inset 3px 3px 8px rgba(30,55,100,.5), inset -3px -3px 6px rgba(140,175,230,.5);}
+.btn-secondary{
+  width:100%; background:var(--bg); color:var(--ink); border:none; border-radius:16px; box-shadow:var(--raised-sm);
+  padding:13px; font-size:13.5px; font-weight:500; margin-top:12px;
+}
+.btn-secondary:active{box-shadow:var(--inset-sm);}
+.btn-danger-text{background:none; border:none; color:var(--danger); font-size:13px; font-weight:600; padding:10px; width:100%; margin-top:6px;}
+
+/* detail page pieces */
+.detail-hero{background:var(--card); box-shadow:var(--raised); border-radius:var(--radius); padding:18px; margin-bottom:20px;}
+.detail-hero h2{font-size:16px; margin:0 0 4px;}
+.detail-hero .meta{font-size:12px; color:var(--ink-soft); margin:0;}
+.detail-hero .amt{font-size:24px; font-weight:700; margin:10px 0 0; color:var(--primary-dark);}
+
+.progress-wrap{background:var(--bg); box-shadow:var(--inset-sm); height:12px; border-radius:8px; overflow:hidden; margin:10px 0;}
+.progress-bar{height:100%; background:linear-gradient(90deg, #5FA57E, var(--success)); border-radius:8px;}
+
+.unit-share{
+  background:var(--card); box-shadow:var(--raised-sm); border-radius:var(--radius-sm);
+  padding:14px 16px; margin-bottom:14px;
+}
+.unit-share-top{display:flex; align-items:center; justify-content:space-between;}
+.unit-share-name{font-size:14px; font-weight:600; margin:0;}
+.unit-share-due{font-size:12px; color:var(--ink-soft); margin:2px 0 0;}
+.unit-share-actions{display:flex; align-items:center; gap:8px;}
+.pay-info{font-size:11.5px; color:var(--ink-faint); margin-top:8px; line-height:1.7;}
+
+.small-btn{
+  border:none; background:var(--bg); box-shadow:var(--raised-sm); border-radius:12px; padding:7px 13px; font-size:12px; font-weight:500; color:var(--ink);
+}
+.small-btn:active{box-shadow:var(--inset-sm);}
+.small-btn.mark{color:var(--success); font-weight:600;}
+
+.avatar{
+  width:38px; height:38px; border-radius:50%; background:var(--bg); box-shadow:var(--inset-sm); color:var(--primary-dark);
+  display:flex; align-items:center; justify-content:center; font-size:12.5px; font-weight:700; flex-shrink:0;
+}
+
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);}
+#loginScreen{ background:var(--bg); display:none; }
+
+/* chat */
+.whoami-bar{display:flex; align-items:center; justify-content:space-between; background:var(--card); box-shadow:var(--inset); border-radius:var(--radius-sm); padding:12px 16px; margin-bottom:20px; font-size:12.5px; color:var(--ink-soft);}
+.whoami-bar b{color:var(--ink);}
+.whoami-bar button{background:none; border:none; color:var(--primary-dark); font-size:12px; font-weight:700; padding:2px;}
+
+.chat-preview{font-size:12px; color:var(--ink-soft); margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px;}
+.unread-dot{width:9px; height:9px; border-radius:50%; background:var(--danger); display:inline-block; margin-inline-start:6px; box-shadow:0 0 0 3px var(--danger-soft);}
+
+.chat-thread{display:flex; flex-direction:column; gap:14px; padding-bottom:8px;}
+.bubble-row{display:flex; flex-direction:column; max-width:78%;}
+.bubble-row.own{align-self:flex-end; align-items:flex-end;}
+.bubble-row.other{align-self:flex-start; align-items:flex-start;}
+.bubble-name{font-size:11px; color:var(--ink-faint); margin:0 0 3px; padding:0 4px;}
+.bubble{border-radius:18px; padding:10px 14px; font-size:13.5px; line-height:1.7; word-break:break-word; box-shadow:var(--raised-sm);}
+.bubble-row.own .bubble{background:linear-gradient(145deg, var(--primary-light), var(--primary)); color:#fff; border-bottom-left-radius:5px;}
+.bubble-row.other .bubble{background:var(--card); color:var(--ink); border-bottom-right-radius:5px;}
+.bubble-time{font-size:10px; color:var(--ink-faint); margin:5px 4px 0;}
+
+.chat-input-wrap{
+  position:fixed; bottom:66px; left:50%; transform:translateX(-50%);
+  max-width:480px; width:100%; background:var(--bg);
+  box-shadow:0 -8px 14px -8px var(--sh-dark);
+  padding:12px 16px; z-index:19; display:none;
+}
+.chat-input-row{display:flex; gap:10px; align-items:flex-end;}
+.chat-input-row textarea{
+  flex:1; border:none; background:var(--bg); box-shadow:var(--inset); border-radius:20px;
+  padding:11px 16px; font-size:13.5px; resize:none; max-height:90px; min-height:42px; color:var(--ink);
+}
+.chat-input-row textarea:focus{outline:2px solid var(--primary); outline-offset:2px;}
+.chat-send-btn{
+  width:44px; height:44px; border-radius:50%; background:linear-gradient(145deg, var(--primary-light), var(--primary)); border:none; color:#fff; flex-shrink:0;
+  box-shadow:var(--raised-sm);
+  display:flex; align-items:center; justify-content:center;
+}
+.chat-send-btn:active{background:var(--primary); box-shadow:inset 3px 3px 7px rgba(30,55,100,.5), inset -2px -2px 5px rgba(140,175,230,.5);}
+.chat-empty{text-align:center; padding:30px 16px; color:var(--ink-faint); font-size:12.5px;}
+.id-pick{display:flex; flex-direction:column; gap:14px;}
+.id-pick button{
+  text-align:right; border:none; background:var(--bg); box-shadow:var(--raised-sm); border-radius:16px;
+  padding:14px 16px; font-size:13.5px; color:var(--ink); font-weight:500;
+}
+.id-pick button:active{box-shadow:var(--inset-sm); color:var(--primary-dark);}
+/* date field + Jalali picker */
+.jdate-wrap{position:relative;}
+.field input.jdate{cursor:pointer; text-align:right;}
+.jdate-clear{position:absolute; left:10px; top:50%; transform:translateY(-50%); width:28px; height:28px; border-radius:50%; border:none; background:var(--bg); box-shadow:var(--raised-sm); color:var(--ink-soft); font-size:16px; line-height:1; display:flex; align-items:center; justify-content:center; padding:0;}
+.jdate-clear:active{box-shadow:var(--inset-sm);}
+.jp-overlay{position:fixed; inset:0; z-index:80; background:rgba(38,51,77,.4); display:flex; align-items:center; justify-content:center; padding:16px;}
+.jp-card{background:var(--bg); width:100%; max-width:340px; border-radius:26px; padding:16px; box-shadow:var(--raised);}
+.jp-head{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px;}
+.jp-nav{width:38px; height:38px; border-radius:50%; border:none; background:var(--bg); box-shadow:var(--raised-sm); color:var(--primary-dark); display:flex; align-items:center; justify-content:center; padding:0; flex-shrink:0;}
+.jp-nav:active{box-shadow:var(--inset-sm);}
+.jp-sel{display:flex; gap:6px; flex:1; min-width:0;}
+.jp-sel select{flex:1; min-width:0; border:none; background:var(--bg); box-shadow:var(--inset-sm); border-radius:12px; padding:8px 6px; font-size:13px; color:var(--ink); font-family:inherit; font-weight:600;}
+.jp-week{display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:12px; color:var(--ink-faint); margin-bottom:6px; font-weight:600;}
+.jp-week .fri, .jp-day.fri{color:var(--danger);}
+.jp-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:14px;}
+.jp-day{height:38px; border:none; border-radius:12px; background:var(--bg); color:var(--ink); font-size:13.5px; font-weight:500; padding:0;}
+.jp-day:active{box-shadow:var(--inset-sm);}
+.jp-day.today{box-shadow:var(--inset-sm); color:var(--primary-dark); font-weight:700;}
+.jp-day.sel{background:linear-gradient(145deg, var(--primary-light), var(--primary)); color:#fff; box-shadow:var(--raised-sm); font-weight:700;}
+.jp-foot{display:flex; justify-content:space-between; gap:10px;}
+.jp-foot .small-btn{flex:1; padding:10px;}
+.vacant-tag{display:inline-block; font-size:10.5px; font-weight:600; padding:3px 10px; border-radius:20px; background:var(--bg); box-shadow:var(--inset-sm); color:var(--ink-soft);}
+.privacy-note{font-size:11.5px; color:var(--ink-soft); line-height:1.8; background:var(--bg); box-shadow:var(--inset-sm); border-radius:14px; padding:12px 14px; margin-bottom:16px;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="loginScreen" style="min-height:100vh; padding:40px 22px; flex-direction:column; justify-content:center;">
+    <div style="text-align:center; margin-bottom:22px;">
+      <img src="logo-120.png" width="96" height="96" alt="لوگوی شش‌دنگ" style="display:block; margin:0 auto 12px; border-radius:24px;">
+      <h1 id="loginTitle" style="font-size:19px; margin:0 0 4px;">ورود به شش‌دنگ</h1>
+      <p id="loginSub" style="font-size:12.5px; color:var(--ink-soft); margin:0;">برای دیدن اطلاعات، ابتدا واحد خود را انتخاب و وارد شوید</p>
+    </div>
+    <div id="loginBody"></div>
+  </div>
+
+  <div class="topbar" id="topbar">
+    <div class="topbar-row">
+      <div class="back-row" id="topbarLeft"></div>
+      <div style="flex:1; min-width:0;">
+        <p class="topbar-title" id="topbarTitle">شش‌دنگ</p>
+        <p class="topbar-sub" id="topbarSub"></p>
+      </div>
+      <button class="icon-btn" id="settingsBtn" aria-label="تنظیمات">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="content" id="content">
+
+    <div class="page" id="page-dashboard">
+      <div class="hero">
+        <p class="hero-label">مانده دریافت‌نشده از واحدها</p>
+        <p class="hero-amount" id="dashOutstanding">۰ تومان</p>
+        <p class="hero-note" id="dashOutstandingNote"></p>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card"><p class="lbl">مجموع هزینه‌ها</p><p class="val" id="statTotal">۰</p></div>
+        <div class="stat-card"><p class="lbl">دریافت‌شده</p><p class="val" id="statCollected">۰</p></div>
+        <div class="stat-card"><p class="lbl">واحد بدهکار</p><p class="val" id="statDebtors">۰</p></div>
+        <div class="stat-card"><p class="lbl">هدف فعال</p><p class="val" id="statGoals">۰</p></div>
+      </div>
+
+      <div class="section-head"><h3>وضعیت واحدها</h3><button class="link-btn" onclick="goTo('units')">همه واحدها</button></div>
+      <div class="card-list" id="dashUnits"></div>
+
+      <div class="section-head"><h3>آخرین هزینه‌ها</h3><button class="link-btn" onclick="goTo('expenses')">همه هزینه‌ها</button></div>
+      <div class="card-list" id="dashExpenses"></div>
+
+      <div class="section-head"><h3>اهداف آینده</h3><button class="link-btn" onclick="goTo('goals')">همه اهداف</button></div>
+      <div class="card-list" id="dashGoals"></div>
+    </div>
+
+    <div class="page" id="page-expenses">
+      <div class="card-list" id="expensesList"></div>
+    </div>
+
+    <div class="page" id="page-goals">
+      <div class="card-list" id="goalsList"></div>
+    </div>
+
+    <div class="page" id="page-units">
+      <div class="card-list" id="unitsList"></div>
+    </div>
+
+    <div class="page" id="page-expenseDetail"></div>
+    <div class="page" id="page-goalDetail"></div>
+    <div class="page" id="page-unitDetail"></div>
+
+    <div class="page" id="page-chat"></div>
+    <div class="page" id="page-chatThread"></div>
+
+  </div>
+
+  <div class="fab" id="fabWrap"><div class="fab-inner"><button class="fab-btn" id="fabBtn"></button></div></div>
+
+  <div class="chat-input-wrap" id="chatInputWrap">
+    <div class="chat-input-row">
+      <textarea id="chatInputBox" rows="1" placeholder="پیام بنویسید..."></textarea>
+      <button class="chat-send-btn" id="chatSendBtn" aria-label="ارسال">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4 20-7z"></path></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="bottomnav" id="bottomnav">
+    <button class="navbtn" data-tab="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="M9 22V12h6v10"></path></svg><span>خانه</span></button>
+    <button class="navbtn" data-tab="expenses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M9 13h6M9 17h6"></path></svg><span>هزینه‌ها</span></button>
+    <button class="navbtn" data-tab="goals"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle></svg><span>اهداف</span></button>
+    <button class="navbtn" data-tab="units"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V7l7-4 7 4v14"></path><path d="M9 21v-6h6v6"></path><path d="M9 9h1M14 9h1M9 13h1M14 13h1"></path></svg><span>واحدها</span></button>
+    <button class="navbtn" data-tab="chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg><span>چت</span></button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="sheet" id="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <h2 id="sheetTitle"></h2>
+      <button class="sheet-close" id="sheetClose" aria-label="بستن">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+      </button>
+    </div>
+    <div id="sheetBody"></div>
+  </div>
+</div>
+<script>
+const SB_URL = 'https://pzknshdvkrhvgauooiqz.supabase.co';
+const SB_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6a25zaGR2a3JodmdhdW9vaXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MjI5NzcsImV4cCI6MjEwMzk5ODk3N30.FKXX3SWgYTC79dHTRUd5YgIlNqCxW3j2OinClNe7Bkc';
+
+const authStorage = {
+  async getItem(key){ try{ return localStorage.getItem(key); } catch(e){ return null; } },
+  async setItem(key, value){ try{ localStorage.setItem(key, value); } catch(e){} },
+  async removeItem(key){ try{ localStorage.removeItem(key); } catch(e){} }
+};
+const sb = window.supabase.createClient(SB_URL, SB_ANON_KEY, {
+  auth: { storage: authStorage, persistSession: true, autoRefreshToken: true, detectSessionInUrl:false }
+});
+
+let state = {buildingName:'ساختمان من', units:[], expenses:[], goals:[]};
+let isManager = false;
+let myUnitId = null;
+let myProfile = null;
+let authUser = null;
+let chatData = {messages:[]};
+let msgChannel = null;
+let currentTab = 'dashboard';
+let detailStack = [];
+
+const CATS = ['شارژ ماهانه','تعمیرات مشاعات','نظافت','آسانسور','برق مشاعات','آب مشترک','گاز مشترک','بیمه ساختمان','سایر'];
+const METHODS = ['نقدی','کارت به کارت','واریز بانکی','چک','سایر'];
+
+function toman(n){ n = Math.round(Number(n)||0); return n.toLocaleString('fa-IR') + ' تومان'; }
+// تاریخ‌ها: هر جا فقط روز (YYYY-MM-DD) است در UTC تبدیل می‌شود تا با منطقه زمانی جابه‌جا نشود
+function fdate(iso){ if(!iso) return '—'; try{ const o={year:'numeric', month:'long', day:'numeric', calendar:'persian'}; if(String(iso).length===10) o.timeZone='UTC'; return new Date(iso).toLocaleDateString('fa-IR', o);}catch(e){return iso;} }
+function fdateShort(iso){ if(!iso) return '—'; try{ const o={month:'short', day:'numeric', calendar:'persian'}; if(String(iso).length===10) o.timeZone='UTC'; return new Date(iso).toLocaleDateString('fa-IR', o);}catch(e){return iso;} }
+function pad2(n){ return String(n).padStart(2,'0'); }
+function todayISO(){ const d=new Date(); return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
+
+/* ---------- تقویم شمسی (جلالی) ---------- */
+const JMONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+const JWEEK = ['ش','ی','د','س','چ','پ','ج'];
+const JBREAKS = [-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178];
+function jdiv(a,b){ return ~~(a/b); }
+function jmod(a,b){ return a - ~~(a/b)*b; }
+function jalCal(jy){
+  const bl = JBREAKS.length; const gy = jy + 621;
+  let leapJ = -14, jp = JBREAKS[0], jm, jump = 0, i;
+  for(i=1;i<bl;i++){
+    jm = JBREAKS[i]; jump = jm - jp;
+    if(jy < jm) break;
+    leapJ += jdiv(jump,33)*8 + jdiv(jmod(jump,33),4);
+    jp = jm;
+  }
+  let n = jy - jp;
+  leapJ += jdiv(n,33)*8 + jdiv(jmod(n,33)+3,4);
+  if(jmod(jump,33)===4 && jump-n===4) leapJ += 1;
+  const leapG = jdiv(gy,4) - jdiv((jdiv(gy,100)+1)*3,4) - 150;
+  const march = 20 + leapJ - leapG;
+  if(jump - n < 6) n = n - jump + jdiv(jump+4,33)*33;
+  let leap = jmod(jmod(n+1,33)-1,4);
+  if(leap === -1) leap = 4;
+  return {leap, gy, march};
+}
+function g2d(gy,gm,gd){
+  let d = jdiv((gy + jdiv(gm-8,6) + 100100)*1461,4) + jdiv(153*jmod(gm+9,12)+2,5) + gd - 34840408;
+  d = d - jdiv(jdiv(gy+100100+jdiv(gm-8,6),100)*3,4) + 752;
+  return d;
+}
+function d2g(jdn){
+  let j = 4*jdn + 139361631;
+  j = j + jdiv(jdiv(4*jdn+183187720,146097)*3,4)*4 - 3908;
+  const i = jdiv(jmod(j,1461),4)*5 + 308;
+  const gd = jdiv(jmod(i,153),5) + 1;
+  const gm = jmod(jdiv(i,153),12) + 1;
+  const gy = jdiv(j,1461) - 100100 + jdiv(8-gm,6);
+  return {gy,gm,gd};
+}
+function j2d(jy,jm,jd){ const r = jalCal(jy); return g2d(r.gy,3,r.march) + (jm-1)*31 - jdiv(jm,7)*(jm-7) + jd - 1; }
+function d2j(jdn){
+  const gy = d2g(jdn).gy; let jy = gy - 621;
+  const r = jalCal(jy); const jdn1f = g2d(gy,3,r.march);
+  let k = jdn - jdn1f;
+  if(k >= 0){
+    if(k <= 185) return {jy, jm:1+jdiv(k,31), jd:jmod(k,31)+1};
+    k -= 186;
+  } else {
+    jy -= 1; k += 179;
+    if(r.leap === 1) k += 1;
+  }
+  return {jy, jm:7+jdiv(k,30), jd:jmod(k,30)+1};
+}
+function isoToJ(iso){ const p = iso.split('-').map(Number); return d2j(g2d(p[0],p[1],p[2])); }
+function jToIso(jy,jm,jd){ const g = d2g(j2d(jy,jm,jd)); return g.gy+'-'+pad2(g.gm)+'-'+pad2(g.gd); }
+function jMonthLen(jy,jm){ return jm<=6 ? 31 : (jm<=11 ? 30 : (jalCal(jy).leap===0 ? 30 : 29)); }
+function faDigits(s){ return String(s).replace(/\d/g, d=>'۰۱۲۳۴۵۶۷۸۹'[d]); }
+function fmtJ(iso){ if(!iso) return ''; const j = isoToJ(iso); return faDigits(j.jy+'/'+pad2(j.jm)+'/'+pad2(j.jd)); }
+
+/* فیلد تاریخ شمسی: مقدار واقعی (میلادی ISO) در data-iso نگه داشته می‌شود */
+function dateField(id, iso, optional){
+  return `<div class="jdate-wrap"><input id="${id}" class="jdate" readonly data-iso="${iso||''}" value="${fmtJ(iso)}" placeholder="انتخاب تاریخ">${optional?`<button type="button" class="jdate-clear" data-for="${id}" aria-label="پاک کردن تاریخ">×</button>`:''}</div>`;
+}
+function bindDates(root){
+  root.querySelectorAll('.jdate').forEach(inp=>{
+    inp.onclick = ()=> openJalaliPicker(inp.dataset.iso || todayISO(), iso=>{ inp.dataset.iso = iso; inp.value = fmtJ(iso); });
+  });
+  root.querySelectorAll('.jdate-clear').forEach(b=>{
+    b.onclick = ()=>{ const inp = root.querySelector('#'+b.dataset.for); inp.dataset.iso=''; inp.value=''; };
+  });
+}
+function openJalaliPicker(iso, onPick){
+  const old = document.getElementById('jpOverlay'); if(old) old.remove();
+  const today = todayISO();
+  let sel = isoToJ(iso), view = {jy:sel.jy, jm:sel.jm};
+  const ov = document.createElement('div');
+  ov.id = 'jpOverlay'; ov.className = 'jp-overlay';
+  document.body.appendChild(ov);
+  const close = ()=>{ ov.remove(); document.removeEventListener('keydown', onKey); };
+  const onKey = e=>{ if(e.key==='Escape') close(); };
+  document.addEventListener('keydown', onKey);
+  ov.addEventListener('click', e=>{ if(e.target===ov) close(); });
+  function draw(){
+    const len = jMonthLen(view.jy, view.jm);
+    const firstDow = (new Date(jToIso(view.jy,view.jm,1)+'T12:00:00').getDay()+1)%7; // شنبه = ۰
+    let cells = '';
+    for(let i=0;i<firstDow;i++) cells += '<span></span>';
+    for(let d=1; d<=len; d++){
+      const cIso = jToIso(view.jy, view.jm, d);
+      const cls = 'jp-day' + (cIso===iso?' sel':'') + (cIso===today?' today':'') + (jmod(firstDow+d-1,7)===6?' fri':'');
+      cells += `<button type="button" class="${cls}" data-iso="${cIso}">${faDigits(d)}</button>`;
+    }
+    const yearOpts = []; for(let y=1395; y<=1415; y++) yearOpts.push(`<option value="${y}" ${y===view.jy?'selected':''}>${faDigits(y)}</option>`);
+    const monthOpts = JMONTHS.map((m,i)=>`<option value="${i+1}" ${i+1===view.jm?'selected':''}>${m}</option>`).join('');
+    ov.innerHTML = `<div class="jp-card" role="dialog" aria-label="انتخاب تاریخ">
+      <div class="jp-head">
+        <button type="button" class="jp-nav" id="jpPrev" aria-label="ماه قبل"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg></button>
+        <div class="jp-sel"><select id="jpMonth" aria-label="ماه">${monthOpts}</select><select id="jpYear" aria-label="سال">${yearOpts.join('')}</select></div>
+        <button type="button" class="jp-nav" id="jpNext" aria-label="ماه بعد"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"></polyline></svg></button>
+      </div>
+      <div class="jp-week">${JWEEK.map((w,i)=>`<span class="${i===6?'fri':''}">${w}</span>`).join('')}</div>
+      <div class="jp-grid">${cells}</div>
+      <div class="jp-foot"><button type="button" class="small-btn" id="jpToday">امروز</button><button type="button" class="small-btn" id="jpCancel">انصراف</button></div>
+    </div>`;
+    ov.querySelector('#jpPrev').onclick = ()=>{ view.jm--; if(view.jm<1){ view.jm=12; view.jy--; } draw(); };
+    ov.querySelector('#jpNext').onclick = ()=>{ view.jm++; if(view.jm>12){ view.jm=1; view.jy++; } draw(); };
+    ov.querySelector('#jpMonth').onchange = e=>{ view.jm = Number(e.target.value); draw(); };
+    ov.querySelector('#jpYear').onchange = e=>{ view.jy = Number(e.target.value); draw(); };
+    ov.querySelector('#jpToday').onclick = ()=>{ onPick(today); close(); };
+    ov.querySelector('#jpCancel').onclick = close;
+    ov.querySelectorAll('.jp-day').forEach(b=> b.onclick = ()=>{ onPick(b.dataset.iso); close(); });
+  }
+  draw();
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ---------- data loading (Supabase) ---------- */
+async function loadAllData(){
+  try{
+  const [{data:units}, {data:settings}, {data:exps}, {data:shares}, {data:goals}, {data:contribs}] = await Promise.all([
+    sb.from('units').select('*').order('created_at'),
+    sb.from('app_settings').select('*').eq('id',1).maybeSingle(),
+    sb.from('expenses').select('*').order('date',{ascending:false}),
+    sb.from('expense_shares').select('*'),
+    sb.from('goals').select('*').order('created_at',{ascending:false}),
+    sb.from('goal_contributions').select('*')
+  ]);
+  state.units = (units||[]).map(u=>({id:u.id, name:u.name, owner:u.owner||'', residents:Math.max(1, Number(u.residents)||1), isVacant:!!u.is_vacant}));
+  state.buildingName = (settings && settings.building_name) ? settings.building_name : 'ساختمان من';
+  state.expenses = (exps||[]).map(e=>({
+    id:e.id, title:e.title, category:e.category, date:e.date, note:e.note, splitMode:e.split_mode||'equal',
+    shares:(shares||[]).filter(s=>s.expense_id===e.id).map(s=>({shareId:s.id, unitId:s.unit_id, amountDue:Number(s.amount_due), paidAmount:Number(s.paid_amount), paidDate:s.paid_date, method:s.method, note:s.note}))
+  }));
+  state.goals = (goals||[]).map(g=>({
+    id:g.id, title:g.title, targetAmount:Number(g.target_amount), deadline:g.deadline, note:g.note,
+    contributions:(contribs||[]).filter(c=>c.goal_id===g.id).map(c=>({id:c.id, amount:Number(c.amount), date:c.date, source:c.source, note:c.note}))
+  }));
+  }catch(e){ console.error('loadAllData:', e); }
+}
+
+function privateKey(a,b){ return [a,b].sort().join('__'); }
+
+async function loadMessages(){
+  try{
+  const {data} = await sb.from('messages').select('*').order('created_at',{ascending:true});
+  chatData.messages = (data||[]).map(m=>({
+    id:m.id, type:m.type, from:m.from_unit, to:m.to_unit,
+    threadKey: m.type==='private' ? privateKey(m.from_unit, m.to_unit) : null,
+    text:m.text, date:m.created_at
+  }));
+  }catch(e){ console.error('loadMessages:', e); }
+}
+let realtimeDebounce = null;
+function subscribeAll(){
+  if(msgChannel) return;
+  const tables = ['units','expenses','expense_shares','goals','goal_contributions','app_settings','messages'];
+  let ch = sb.channel('all-tables-live');
+  tables.forEach(t=>{
+    ['INSERT','UPDATE','DELETE'].forEach(ev=>{
+      ch = ch.on('postgres_changes', {event:ev, schema:'public', table:t}, ()=>{
+        clearTimeout(realtimeDebounce);
+        realtimeDebounce = setTimeout(async ()=>{
+          await loadAllData();
+          await loadMessages();
+          // don't interrupt user if sheet is open
+          const sheetOpen = document.getElementById('overlay').classList.contains('open');
+          if(!sheetOpen) render();
+        }, 150);
+      });
+    });
+  });
+  msgChannel = ch.subscribe();
+}
+
+/* ---------- auth ---------- */
+async function refreshProfile(){
+  if(!authUser){ myProfile=null; isManager=false; myUnitId=null; return; }
+  try{
+    const {data, error} = await sb.from('profiles').select('*').eq('id', authUser.id).maybeSingle();
+    if(error) throw error;
+    myProfile = data || null;
+    isManager = !!(myProfile && myProfile.is_manager);
+    myUnitId = myProfile ? myProfile.unit_id : null;
+  }catch(e){ console.error('refreshProfile:', e); myProfile=null; isManager=false; myUnitId=null; }
+}
+async function proceedAfterAuth(){
+  await loadAllData();
+  await refreshProfile();
+  if(myProfile){ await loadMessages(); subscribeAll(); }
+  render();
+}
+function logoutUnit(){
+  if(confirm('از حساب خود خارج شوید؟')){
+    (async()=>{
+      await sb.auth.signOut();
+      if(msgChannel){ try{ await sb.removeChannel(msgChannel); }catch(e){} msgChannel=null; }
+      if(realtimeDebounce){ clearTimeout(realtimeDebounce); realtimeDebounce=null; }
+      authUser=null; myProfile=null; isManager=false; myUnitId=null;
+      chatData={messages:[]};
+      detailStack=[]; currentTab='dashboard';
+      render();
+    })();
+  }
+}
+
+function expenseStatus(exp){
+  const total = exp.shares.reduce((s,x)=>s+x.amountDue,0);
+  const paid = exp.shares.reduce((s,x)=>s+Math.min(x.paidAmount,x.amountDue),0);
+  if(paid<=0) return {label:'پرداخت‌نشده', cls:'badge-due'};
+  if(paid>=total) return {label:'تسویه', cls:'badge-paid'};
+  return {label:'ناقص', cls:'badge-partial'};
+}
+function unitOutstanding(unitId){
+  let due=0, paid=0;
+  state.expenses.forEach(e=> e.shares.forEach(s=>{ if(s.unitId===unitId){ due+=s.amountDue; paid+=Math.min(s.paidAmount,s.amountDue);} }));
+  return {due, paid, balance: due-paid};
+}
+function totals(){
+  let total=0, collected=0;
+  state.expenses.forEach(e=> e.shares.forEach(s=>{ total+=s.amountDue; collected+=Math.min(s.paidAmount,s.amountDue); }));
+  return {total, collected, outstanding: total-collected};
+}
+
+/* ---------- render ---------- */
+function showAppChrome(show){
+  document.getElementById('topbar').style.display = show? '' : 'none';
+  document.getElementById('content').style.display = show? '' : 'none';
+  document.getElementById('bottomnav').style.display = show? '' : 'none';
+  document.getElementById('fabWrap').style.display = show? '' : 'none';
+  document.getElementById('chatInputWrap').style.display = show? '' : 'none';
+  document.getElementById('loginScreen').style.display = show? 'none':'flex';
+}
+
+async function renderLoginScreen(){
+  const body = document.getElementById('loginBody');
+  const title = document.getElementById('loginTitle');
+  const sub = document.getElementById('loginSub');
+
+  if(!authUser){
+    title.textContent = 'ورود یا ثبت‌نام';
+    sub.textContent = 'با ایمیل خود وارد شش‌دنگ شوید';
+    body.innerHTML = `
+      <div class="field"><label>ایمیل</label><input id="li_email" type="email" placeholder="you@example.com"></div>
+      <div class="field"><label>رمز عبور</label><input id="li_pass" type="password" placeholder="حداقل ۶ کاراکتر"></div>
+      <div class="field-error" id="li_err" style="display:none;"></div>
+      <button class="btn-primary" id="li_signin">ورود</button>
+      <button class="btn-secondary" id="li_signup">ساخت حساب جدید</button>
+      <p style="font-size:11px; color:var(--ink-soft); margin-top:10px; line-height:1.8;">اگر تازه‌کارید، اول «ساخت حساب جدید» را بزنید.</p>
+    `;
+    const emailI = body.querySelector('#li_email');
+    const passI = body.querySelector('#li_pass');
+    const err = body.querySelector('#li_err');
+    body.querySelector('#li_signin').onclick = async ()=>{
+      err.style.display='none';
+      const {data, error} = await sb.auth.signInWithPassword({email:emailI.value.trim(), password:passI.value});
+      if(error){ err.textContent = error.message; err.style.display='block'; return; }
+      authUser = data.user;
+      await proceedAfterAuth();
+    };
+    body.querySelector('#li_signup').onclick = async ()=>{
+      err.style.display='none';
+      if(!emailI.value.trim() || passI.value.length<6){ err.textContent='ایمیل معتبر و رمز حداقل ۶ کاراکتری وارد کنید.'; err.style.display='block'; return; }
+      const {data, error} = await sb.auth.signUp({email:emailI.value.trim(), password:passI.value});
+      if(error){ err.textContent = error.message; err.style.display='block'; return; }
+      if(!data.session){
+        const {data:d2, error:e2} = await sb.auth.signInWithPassword({email:emailI.value.trim(), password:passI.value});
+        if(!e2 && d2.session){ authUser = d2.user; await proceedAfterAuth(); return; }
+        err.textContent = 'حساب ساخته شد. لینک ایمیل تأیید را باز کنید، سپس وارد شوید.';
+        err.style.display='block';
+        return;
+      }
+      authUser = data.user;
+      await proceedAfterAuth();
+    };
+    return;
+  }
+
+  title.textContent = 'واحد خود را انتخاب کنید';
+  sub.textContent = 'این انتخاب، حساب شما را به یکی از واحدهای ساختمان وصل می‌کند';
+  // ensure units are loaded (may be empty if came directly here)
+  if(state.units.length===0) await loadAllData();
+  const options = state.units.map(u=>`<button class="id-pick-btn" data-id="${u.id}">${esc(u.name)}${u.owner?' — '+esc(u.owner):''}</button>`).join('');
+  body.innerHTML = `<div class="id-pick">${options}</div><button class="btn-secondary" id="li_signout" style="margin-top:14px;">خروج از حساب</button>`;
+  body.querySelectorAll('.id-pick-btn').forEach(b=> b.onclick = async ()=>{
+    const {error} = await sb.from('profiles').insert({id:authUser.id, unit_id:b.dataset.id});
+    if(error){
+      if(error.code==='23505' && error.message.includes('unit_id')){
+        alert('این واحد قبلاً توسط شخص دیگری انتخاب شده است. لطفاً واحد دیگری انتخاب کنید.');
+      } else if(error.code==='23505'){
+        await refreshProfile();
+        if(myProfile){ await loadMessages(); subscribeAll(); render(); return; }
+        alert('خطا: '+error.message);
+      } else { alert('خطا: '+error.message); }
+      return;
+    }
+    await refreshProfile();
+    await loadMessages(); subscribeAll();
+    render();
+  });
+  body.querySelector('#li_signout').onclick = async ()=>{ await sb.auth.signOut(); authUser=null; render(); };
+}
+
+async function render(){
+  if(!authUser || !myProfile){ showAppChrome(false); await renderLoginScreen(); return; }
+  showAppChrome(true);
+  renderTopbar();
+  renderFab();
+  renderChatInputBar();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active', b.dataset.tab===currentTab));
+
+  if(detailStack.length){
+    const d = detailStack[detailStack.length-1];
+    if(d.type==='chat'){
+      document.getElementById('page-chatThread').classList.add('active');
+      renderChatThread(d.id);
+    } else {
+      document.getElementById('page-'+d.type+'Detail').classList.add('active');
+      if(d.type==='expense') renderExpenseDetail(d.id);
+      if(d.type==='goal') renderGoalDetail(d.id);
+      if(d.type==='unit') renderUnitDetail(d.id);
+    }
+    return;
+  }
+  const activePage = document.getElementById('page-'+currentTab);
+  if(activePage) activePage.classList.add('active');
+  if(currentTab==='dashboard') renderDashboard();
+  if(currentTab==='expenses') renderExpenses();
+  if(currentTab==='goals') renderGoals();
+  if(currentTab==='units') renderUnits();
+  if(currentTab==='chat') renderChat();
+}
+
+function renderTopbar(){
+  const left = document.getElementById('topbarLeft');
+  const title = document.getElementById('topbarTitle');
+  const sub = document.getElementById('topbarSub');
+  const settingsBtn = document.getElementById('settingsBtn');
+  if(detailStack.length){
+    const d = detailStack[detailStack.length-1];
+    left.innerHTML = '<button id="backBtn" aria-label="بازگشت"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg></button>';
+    document.getElementById('backBtn').onclick = ()=>{ detailStack.pop(); render(); };
+    if(d.type==='expense'){ const e = state.expenses.find(x=>x.id===d.id); title.textContent = e? e.title : 'هزینه'; sub.textContent = e? fdate(e.date) : ''; }
+    if(d.type==='goal'){ const g = state.goals.find(x=>x.id===d.id); title.textContent = g? g.title : 'هدف'; sub.textContent=''; }
+    if(d.type==='unit'){ const u = state.units.find(x=>x.id===d.id); title.textContent = u? u.name : 'واحد'; sub.textContent = u&&u.owner ? u.owner : ''; }
+    if(d.type==='chat'){
+      if(d.id==='public'){ title.textContent = 'چت عمومی'; sub.textContent = 'همه واحدها'; }
+      else{ const u = state.units.find(x=>x.id===d.id); title.textContent = u? u.name : 'چت خصوصی'; sub.textContent = 'چت خصوصی'; }
+    }
+    settingsBtn.style.visibility='hidden';
+    return;
+  }
+  settingsBtn.style.visibility='visible';
+  left.innerHTML = '';
+  const roleTag = isManager ? '' : ' · حالت مشاهده';
+  const titles = {dashboard: state.buildingName, expenses:'هزینه‌ها و قبوض', goals:'اهداف آینده', units:'واحدها', chat:'چت ساختمان'};
+  const subs = {dashboard: state.units.length.toLocaleString('fa-IR')+' واحد'+roleTag, expenses:roleTag.replace(' · ',''), goals:roleTag.replace(' · ',''), units:roleTag.replace(' · ',''), chat:''};
+  title.textContent = titles[currentTab];
+  sub.textContent = subs[currentTab];
+}
+
+function renderFab(){
+  const fabWrap = document.getElementById('fabWrap');
+  const btn = document.getElementById('fabBtn');
+  if(!isManager){ fabWrap.style.display='none'; return; }
+  if(detailStack.length){ fabWrap.style.display='none'; return; }
+  const map = {dashboard:null, expenses:'+ ثبت هزینه یا قبض جدید', goals:'+ هدف جدید', units:null, chat:null};
+  const label = map[currentTab];
+  if(!label){ fabWrap.style.display='none'; return; }
+  fabWrap.style.display='block';
+  btn.textContent = label;
+  btn.onclick = currentTab==='expenses' ? openExpenseForm : openGoalForm;
+}
+
+function goTo(tab){ currentTab = tab; detailStack=[]; render(); }
+
+/* ---------- dashboard ---------- */
+function renderDashboard(){
+  const t = totals();
+  document.getElementById('dashOutstanding').textContent = toman(t.outstanding);
+  document.getElementById('dashOutstandingNote').textContent = t.outstanding>0 ? 'مجموع سهم‌های پرداخت‌نشده واحدها' : 'همه واحدها تسویه هستند';
+  document.getElementById('statTotal').textContent = toman(t.total);
+  document.getElementById('statCollected').textContent = toman(t.collected);
+  const debtors = state.units.filter(u=>unitOutstanding(u.id).balance>0).length;
+  document.getElementById('statDebtors').textContent = debtors.toLocaleString('fa-IR');
+  document.getElementById('statGoals').textContent = state.goals.length.toLocaleString('fa-IR');
+
+  const du = document.getElementById('dashUnits');
+  du.innerHTML='';
+  if(state.units.length===0) du.innerHTML = '<div class="empty">واحدی ثبت نشده است.</div>';
+  state.units.slice(0,6).forEach(u=>{
+    const o = unitOutstanding(u.id);
+    du.appendChild(unitRow(u,o));
+  });
+
+  const de = document.getElementById('dashExpenses');
+  de.innerHTML='';
+  const recent = [...state.expenses].sort((a,b)=> (b.date||'').localeCompare(a.date||'')).slice(0,4);
+  if(recent.length===0) de.innerHTML = '<div class="empty">هنوز هزینه‌ای ثبت نشده. با دکمه «هزینه‌ها» یکی اضافه کنید.</div>';
+  recent.forEach(e=> de.appendChild(expenseRow(e)));
+
+  const dg = document.getElementById('dashGoals');
+  dg.innerHTML='';
+  const activeGoals = state.goals.filter(g=> savedAmount(g) < g.targetAmount).slice(0,2);
+  if(activeGoals.length===0) dg.innerHTML = '<div class="empty">هدفی برای آینده ثبت نشده است.</div>';
+  activeGoals.forEach(g=> dg.appendChild(goalRow(g)));
+}
+
+function unitRow(u,o){
+  const div = document.createElement('div');
+  div.className='row-card';
+  div.onclick = ()=>{ detailStack.push({type:'unit', id:u.id}); render(); };
+  const badge = o.balance>0 ? `<span class="row-badge badge-due">بدهکار</span>` : (u.isVacant ? `<span class="vacant-tag">بدون ساکن</span>` : `<span class="row-badge badge-paid">تسویه</span>`);
+  div.innerHTML = `
+    <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+      <div class="avatar">${u.name.trim().slice(-2)}</div>
+      <div class="row-main"><p class="row-title">${esc(u.name)}</p><p class="row-sub">${esc(u.owner||'بدون نام مالک')} · ${u.isVacant ? 'بدون ساکن' : u.residents.toLocaleString('fa-IR')+' نفر'}</p></div>
+    </div>
+    <div class="row-right"><p class="row-amount">${o.balance>0?toman(o.balance):'—'}</p>${badge}</div>`;
+  return div;
+}
+function expenseRow(e){
+  const div = document.createElement('div');
+  div.className='row-card';
+  div.onclick = ()=>{ detailStack.push({type:'expense', id:e.id}); render(); };
+  const st = expenseStatus(e);
+  const total = e.shares.reduce((s,x)=>s+x.amountDue,0);
+  div.innerHTML = `
+    <div class="row-main"><p class="row-title">${esc(e.title)}</p><p class="row-sub">${esc(e.category)} · ${fdateShort(e.date)}</p></div>
+    <div class="row-right"><p class="row-amount">${toman(total)}</p><span class="row-badge ${st.cls}">${st.label}</span></div>`;
+  return div;
+}
+function savedAmount(g){ return (g.contributions||[]).reduce((s,c)=>s+Number(c.amount||0),0); }
+function goalRow(g){
+  const div = document.createElement('div');
+  div.className='row-card';
+  div.style.flexDirection='column'; div.style.alignItems='stretch';
+  div.onclick = ()=>{ detailStack.push({type:'goal', id:g.id}); render(); };
+  const saved = savedAmount(g);
+  const pct = g.targetAmount>0 ? Math.min(100, Math.round(saved/g.targetAmount*100)) : 0;
+  div.innerHTML = `
+    <div style="display:flex; justify-content:space-between; width:100%;">
+      <p class="row-title">${esc(g.title)}</p><p class="row-sub">${pct.toLocaleString('fa-IR')}٪</p>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+    <p class="row-sub">${toman(saved)} از ${toman(g.targetAmount)}</p>`;
+  return div;
+}
+
+/* ---------- expenses list ---------- */
+function renderExpenses(){
+  const el = document.getElementById('expensesList');
+  el.innerHTML='';
+  const sorted = [...state.expenses].sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  if(sorted.length===0){ el.innerHTML = '<div class="empty">هنوز هزینه یا قبضی ثبت نشده.<br>با دکمه پایین صفحه اولین مورد را اضافه کنید.</div>'; return; }
+  sorted.forEach(e=> el.appendChild(expenseRow(e)));
+}
+
+/* ---------- goals list ---------- */
+function renderGoals(){
+  const el = document.getElementById('goalsList');
+  el.innerHTML='';
+  if(state.goals.length===0){ el.innerHTML = '<div class="empty">هدفی برای آینده ثبت نشده.<br>مثلاً نوسازی نما یا تعویض آسانسور.</div>'; return; }
+  state.goals.forEach(g=> el.appendChild(goalRow(g)));
+}
+
+/* ---------- units list ---------- */
+function renderUnits(){
+  const el = document.getElementById('unitsList');
+  el.innerHTML='';
+  state.units.forEach(u=> el.appendChild(unitRow(u, unitOutstanding(u.id))));
+  if(isManager){
+    const addBtn = document.createElement('button');
+    addBtn.className='btn-secondary';
+    addBtn.textContent='+ افزودن واحد';
+    addBtn.onclick = openAddUnit;
+    el.appendChild(addBtn);
+  }
+}
+
+/* ---------- expense detail ---------- */
+function renderExpenseDetail(id){
+  const page = document.getElementById('page-expenseDetail');
+  const e = state.expenses.find(x=>x.id===id);
+  if(!e){ detailStack=[]; render(); return; }
+  const total = e.shares.reduce((s,x)=>s+x.amountDue,0);
+  const paid = e.shares.reduce((s,x)=>s+Math.min(x.paidAmount,x.amountDue),0);
+  const pct = total>0 ? Math.round(paid/total*100) : 0;
+  page.innerHTML = `
+    <div class="detail-hero">
+      <h2>${esc(e.title)}</h2>
+      <p class="meta">${esc(e.category)} · ${fdate(e.date)}</p>
+      <p class="amt">${toman(total)}</p>
+      <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+      <p class="meta">${toman(paid)} دریافت شده از ${toman(total)}</p>
+      <p class="meta" style="margin-top:8px;">نحوه تقسیم: ${e.splitMode==='per_person' ? 'به نسبت تعداد نفرات هر واحد' : (e.splitMode==='manual' ? 'دستی' : 'مساوی بین واحدها')}</p>
+      ${e.note ? `<p class="meta" style="margin-top:8px;">${esc(e.note)}</p>` : ''}
+    </div>
+    <div class="section-head" style="margin-top:0;"><h3>سهم هر واحد</h3></div>
+    <div id="expShares"></div>
+    ${isManager ? `<button class="btn-secondary" id="editExpBtn">ویرایش هزینه</button>
+    <button class="btn-danger-text" id="delExpBtn">حذف این هزینه</button>` : ''}
+  `;
+  const wrap = page.querySelector('#expShares');
+  e.shares.forEach(s=>{
+    const u = state.units.find(x=>x.id===s.unitId) || {name:'—'};
+    const remain = Math.max(0, s.amountDue - s.paidAmount);
+    const div = document.createElement('div');
+    div.className='unit-share';
+    div.innerHTML = `
+      <div class="unit-share-top">
+        <div><p class="unit-share-name">${esc(u.name)}</p><p class="unit-share-due">سهم: ${toman(s.amountDue)}</p></div>
+        <div class="unit-share-actions">
+          ${remain<=0 ? '<span class="row-badge badge-paid">تسویه</span>' : (isManager ? `<button class="small-btn mark" data-pay="${s.unitId}">ثبت پرداخت</button>` : '<span class="row-badge badge-due">پرداخت‌نشده</span>')}
+        </div>
+      </div>
+      ${s.paidAmount>0 ? `<p class="pay-info">پرداخت‌شده: ${toman(s.paidAmount)}${s.paidDate?' · تاریخ: '+fdate(s.paidDate):''}${s.method?' · روش: '+esc(s.method):''}${remain>0?' · باقیمانده: '+toman(remain):''}</p>` : ''}
+    `;
+    wrap.appendChild(div);
+  });
+  if(isManager){
+    wrap.querySelectorAll('[data-pay]').forEach(b=> b.onclick = ()=> openPaymentForm(e.id, b.dataset.pay));
+    page.querySelector('#editExpBtn').onclick = ()=> openExpenseForm(e.id);
+    page.querySelector('#delExpBtn').onclick = async ()=>{
+      if(confirm('این هزینه حذف شود؟')){
+        const {error:delExpErr} = await sb.from('expenses').delete().eq('id', e.id);
+        if(delExpErr){ alert('خطا در حذف: '+delExpErr.message); return; }
+        await loadAllData();
+        detailStack=[]; render();
+      }
+    };
+  }
+}
+
+/* ---------- goal detail ---------- */
+function renderGoalDetail(id){
+  const page = document.getElementById('page-goalDetail');
+  const g = state.goals.find(x=>x.id===id);
+  if(!g){ detailStack=[]; render(); return; }
+  const saved = savedAmount(g);
+  const pct = g.targetAmount>0 ? Math.min(100, Math.round(saved/g.targetAmount*100)) : 0;
+  page.innerHTML = `
+    <div class="detail-hero">
+      <h2>${esc(g.title)}</h2>
+      <p class="meta">${g.deadline ? 'مهلت: '+fdate(g.deadline) : 'بدون مهلت مشخص'}</p>
+      <p class="amt">${toman(saved)}</p>
+      <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+      <p class="meta">${pct.toLocaleString('fa-IR')}٪ از هدف ${toman(g.targetAmount)}</p>
+      ${g.note ? `<p class="meta" style="margin-top:8px;">${esc(g.note)}</p>` : ''}
+    </div>
+    ${isManager ? '<button class="btn-primary" id="addContribBtn">+ ثبت واریز به این هدف</button>' : ''}
+    <div class="section-head"><h3>تاریخچه واریزها</h3></div>
+    <div id="goalContribs"></div>
+    ${isManager ? `<button class="btn-secondary" id="editGoalBtn">ویرایش هدف</button>
+    <button class="btn-danger-text" id="delGoalBtn">حذف این هدف</button>` : ''}
+  `;
+  const wrap = page.querySelector('#goalContribs');
+  const cs = [...(g.contributions||[])].sort((a,b)=> b.date.localeCompare(a.date));
+  if(cs.length===0) wrap.innerHTML = '<div class="empty">هنوز واریزی ثبت نشده.</div>';
+  cs.forEach(c=>{
+    const div = document.createElement('div');
+    div.className='row-card';
+    div.innerHTML = `<div class="row-main"><p class="row-title">${toman(c.amount)}</p><p class="row-sub">${esc(c.source||'منبع نامشخص')}${c.note?' · '+esc(c.note):''}</p></div><div class="row-right"><p class="row-sub">${fdate(c.date)}</p></div>`;
+    wrap.appendChild(div);
+  });
+  if(isManager){
+    page.querySelector('#addContribBtn').onclick = ()=> openContributionForm(g.id);
+    page.querySelector('#editGoalBtn').onclick = ()=> openGoalForm(g.id);
+    page.querySelector('#delGoalBtn').onclick = async ()=>{
+      if(confirm('این هدف حذف شود؟')){
+        const {error:delGoalErr} = await sb.from('goals').delete().eq('id', g.id);
+        if(delGoalErr){ alert('خطا در حذف: '+delGoalErr.message); return; }
+        await loadAllData();
+        detailStack=[]; render();
+      }
+    };
+  }
+}
+
+/* ---------- unit detail ---------- */
+function renderUnitDetail(id){
+  const page = document.getElementById('page-unitDetail');
+  const u = state.units.find(x=>x.id===id);
+  if(!u){ detailStack=[]; render(); return; }
+  const o = unitOutstanding(u.id);
+  page.innerHTML = `
+    <div class="detail-hero">
+      <h2>${esc(u.name)}</h2>
+      <p class="meta">${esc(u.owner||'مالک ثبت نشده')} · ${u.isVacant ? 'بدون ساکن' : u.residents.toLocaleString('fa-IR')+' نفر ساکن'}</p>
+      <p class="amt" style="color:${o.balance>0?'var(--danger)':'var(--success)'}">${o.balance>0 ? toman(o.balance) : 'تسویه'}</p>
+      <p class="meta">${o.balance>0 ? 'مانده بدهی این واحد' : 'این واحد بدهی ندارد'}</p>
+    </div>
+    ${isManager ? '<button class="btn-secondary" id="editUnitBtn">ویرایش نام، مالک و تعداد نفرات</button>' : ''}
+    <div class="section-head"><h3>تاریخچه پرداخت‌های واحد</h3></div>
+    <div id="unitHistory"></div>
+    ${isManager ? `<button class="btn-secondary" id="vacantBtn">${u.isVacant ? 'این واحد دوباره ساکن دارد' : 'بدون ساکن شد'}</button>
+    <p style="font-size:11.5px; color:var(--ink-faint); line-height:1.8; margin:8px 2px 0;">${u.isVacant ? 'این واحد در حال حاضر در هزینه‌های جدید حساب نمی‌شود.' : 'اگر ساکنی در این واحد نیست، این دکمه را بزنید تا از هزینه‌های بعدی کنار برود. هزینه‌ها و پرداخت‌های قبلی دست‌نخورده می‌مانند.'}</p>` : ''}
+    ${isManager && state.units.length>1 ? '<button class="btn-danger-text" id="delUnitBtn">حذف این واحد (فقط برای ثبت اشتباه)</button>' : ''}
+  `;
+  const wrap = page.querySelector('#unitHistory');
+  const rows = [];
+  state.expenses.forEach(e=>{
+    const s = e.shares.find(x=>x.unitId===u.id);
+    if(s) rows.push({exp:e, share:s});
+  });
+  rows.sort((a,b)=> b.exp.date.localeCompare(a.exp.date));
+  if(rows.length===0) wrap.innerHTML = '<div class="empty">این واحد هنوز در هزینه‌ای سهیم نبوده.</div>';
+  rows.forEach(r=>{
+    const remain = Math.max(0, r.share.amountDue - r.share.paidAmount);
+    const div = document.createElement('div');
+    div.className='row-card';
+    div.style.cursor='pointer';
+    div.onclick = ()=>{ detailStack.push({type:'expense', id:r.exp.id}); render(); };
+    div.innerHTML = `
+      <div class="row-main"><p class="row-title">${esc(r.exp.title)}</p><p class="row-sub">${fdateShort(r.exp.date)}${r.share.paidDate? ' · پرداخت: '+fdate(r.share.paidDate):''}${r.share.method?' · '+esc(r.share.method):''}</p></div>
+      <div class="row-right"><p class="row-amount">${toman(r.share.amountDue)}</p><span class="row-badge ${remain<=0?'badge-paid':(r.share.paidAmount>0?'badge-partial':'badge-due')}">${remain<=0?'تسویه':(r.share.paidAmount>0?'ناقص':'پرداخت‌نشده')}</span></div>`;
+    wrap.appendChild(div);
+  });
+  if(isManager){
+    const editBtn = page.querySelector('#editUnitBtn');
+    if(editBtn) editBtn.onclick = ()=> openEditUnit(u.id);
+    const vacBtn = page.querySelector('#vacantBtn');
+    if(vacBtn) vacBtn.onclick = async ()=>{
+      const toVacant = !u.isVacant;
+      const msg = toVacant ? `«${u.name}» بدون ساکن شود؟ از هزینه‌های جدید کنار می‌رود (هزینه‌های قبلی تغییر نمی‌کنند).` : `«${u.name}» دوباره ساکن دارد؟ از هزینه‌های جدید دوباره حساب می‌شود.`;
+      if(!confirm(msg)) return;
+      const {error} = await sb.from('units').update({is_vacant: toVacant}).eq('id', u.id);
+      if(error){ alert('خطا: '+error.message); return; }
+      await loadAllData(); render();
+    };
+    const delBtn = page.querySelector('#delUnitBtn');
+    if(delBtn) delBtn.onclick = async ()=>{
+      if(confirm('این واحد حذف شود؟ این گزینه فقط برای واحدی است که اشتباهاً تعریف شده. اگر در هزینه یا پیامی سابقه داشته باشد، حذف انجام نمی‌شود.')){
+        const {error} = await sb.from('units').delete().eq('id', u.id);
+        if(error){ alert('این واحد سابقه دارد و قابل حذف نیست. اگر ساکن ندارد، از دکمه‌ی «بدون ساکن شد» استفاده کنید.'); return; }
+        await loadAllData();
+        detailStack=[]; render();
+      }
+    };
+  }
+}
+
+/* ---------- chat ---------- */
+function lastMessage(filterFn){
+  const list = chatData.messages.filter(filterFn);
+  if(list.length===0) return null;
+  return list.reduce((a,b)=> a.date>b.date ? a : b);
+}
+function chatTimeLabel(iso){
+  const d = new Date(iso);
+  const now = new Date();
+  const sameDay = d.toDateString()===now.toDateString();
+  return sameDay ? d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}) : fdateShort(iso);
+}
+
+function renderChat(){
+  const page = document.getElementById('page-chat');
+  const me = state.units.find(u=>u.id===myUnitId);
+  const lastPublic = lastMessage(m=>m.type==='public');
+  const others = state.units.filter(u=>u.id!==myUnitId);
+  page.innerHTML = `
+    <div class="whoami-bar"><span>شما: <b>${esc(me?me.name:'—')}</b></span><button id="changeWhoami">خروج</button></div>
+    <div class="section-head" style="margin-top:0;"><h3>چت عمومی</h3></div>
+    <div class="card-list" id="publicChatCard"></div>
+    <div class="section-head"><h3>چت خصوصی با واحدها</h3></div>
+    <div class="card-list" id="privateChatList"></div>
+  `;
+  page.querySelector('#changeWhoami').onclick = logoutUnit;
+  const pubWrap = page.querySelector('#publicChatCard');
+  const pubDiv = document.createElement('div');
+  pubDiv.className='row-card';
+  pubDiv.onclick = ()=>{ detailStack.push({type:'chat', id:'public'}); render(); };
+  pubDiv.innerHTML = `
+    <div class="row-main"><p class="row-title">چت عمومی ساختمان</p><p class="chat-preview">${lastPublic? esc((state.units.find(u=>u.id===lastPublic.from)||{}).name||'') + ': ' + esc(lastPublic.text) : 'هنوز پیامی ثبت نشده'}</p></div>
+    <div class="row-right"><p class="row-sub">${lastPublic? chatTimeLabel(lastPublic.date) : ''}</p></div>`;
+  pubWrap.appendChild(pubDiv);
+
+  const privWrap = page.querySelector('#privateChatList');
+  if(others.length===0) privWrap.innerHTML = '<div class="empty">واحد دیگری برای چت خصوصی نیست.</div>';
+  others.forEach(u=>{
+    const key = privateKey(myUnitId, u.id);
+    const last = lastMessage(m=> m.type==='private' && m.threadKey===key);
+    const div = document.createElement('div');
+    div.className='row-card';
+    div.onclick = ()=>{ detailStack.push({type:'chat', id:u.id}); render(); };
+    div.innerHTML = `
+      <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+        <div class="avatar">${u.name.trim().slice(-2)}</div>
+        <div class="row-main"><p class="row-title">${esc(u.name)}</p><p class="chat-preview">${last? (last.from===myUnitId?'شما: ':'')+esc(last.text) : 'شروع گفتگو'}</p></div>
+      </div>
+      <div class="row-right"><p class="row-sub">${last? chatTimeLabel(last.date):''}</p></div>`;
+    privWrap.appendChild(div);
+  });
+}
+
+function renderChatThread(id){
+  const page = document.getElementById('page-chatThread');
+  const isPublic = id==='public';
+  const key = isPublic ? null : privateKey(myUnitId, id);
+  const msgs = chatData.messages
+    .filter(m=> isPublic ? m.type==='public' : (m.type==='private' && m.threadKey===key))
+    .sort((a,b)=> a.date.localeCompare(b.date));
+  page.innerHTML = `
+    ${!isPublic ? '<div class="privacy-note">این گفتگوی خصوصی با کنترل دسترسی سمت سرور (Row Level Security) فقط بین این دو واحد قابل مشاهده است — نه بقیه واحدها، نه حتی مدیر ساختمان.</div>' : ''}
+    <div class="chat-thread" id="chatMsgs"></div>
+  `;
+  const wrap = page.querySelector('#chatMsgs');
+  if(msgs.length===0){ wrap.innerHTML = '<div class="chat-empty">هنوز پیامی رد و بدل نشده. اولین پیام را بفرستید.</div>'; }
+  msgs.forEach(m=>{
+    const own = m.from===myUnitId;
+    const senderUnit = state.units.find(u=>u.id===m.from);
+    const row = document.createElement('div');
+    row.className = 'bubble-row ' + (own?'own':'other');
+    row.innerHTML = `
+      ${isPublic ? `<p class="bubble-name">${own?'شما':esc(senderUnit?senderUnit.name:'—')}</p>` : ''}
+      <div class="bubble">${esc(m.text)}</div>
+      <p class="bubble-time">${chatTimeLabel(m.date)}</p>`;
+    wrap.appendChild(row);
+  });
+  const contentEl = document.getElementById('content');
+  contentEl.style.paddingBottom = '80px';
+  setTimeout(()=>{ contentEl.scrollTop = contentEl.scrollHeight; }, 50);
+}
+
+function renderChatInputBar(){
+  const wrap = document.getElementById('chatInputWrap');
+  const contentEl = document.getElementById('content');
+  const isChat = detailStack.length && detailStack[detailStack.length-1].type==='chat';
+  wrap.style.display = (isChat && myUnitId) ? 'block' : 'none';
+  if(!isChat) contentEl.style.paddingBottom = '';
+}
+
+const chatBox = document.getElementById('chatInputBox');
+chatBox.addEventListener('input', ()=>{ chatBox.style.height='auto'; chatBox.style.height=Math.min(90,chatBox.scrollHeight)+'px'; });
+document.getElementById('chatSendBtn').onclick = async ()=>{
+  const text = chatBox.value.trim();
+  if(!text || !myUnitId || !detailStack.length) return;
+  const d = detailStack[detailStack.length-1];
+  if(d.type!=='chat') return;
+  const isPublic = d.id==='public';
+  chatBox.value=''; chatBox.style.height='auto';
+  const {error} = await sb.from('messages').insert({ type: isPublic?'public':'private', from_unit: myUnitId, to_unit: isPublic?null:d.id, text });
+  if(error){ alert('پیام ارسال نشد: '+error.message); return; }
+  await loadMessages();
+  renderChatThread(d.id);
+};
+chatBox.addEventListener('keydown', (e)=>{
+  if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); document.getElementById('chatSendBtn').click(); }
+});
+
+/* ---------- sheet / modal system ---------- */
+function openSheet(title, bodyHtml, onMount){
+  document.getElementById('sheetTitle').textContent = title;
+  document.getElementById('sheetBody').innerHTML = bodyHtml;
+  document.getElementById('overlay').classList.add('open');
+  bindDates(document.getElementById('sheetBody'));
+  if(onMount) onMount(document.getElementById('sheetBody'));
+}
+function closeSheet(){
+  document.getElementById('overlay').classList.remove('open');
+  // apply any realtime changes that arrived while sheet was open
+  if(realtimeDebounce){ clearTimeout(realtimeDebounce); realtimeDebounce=null; }
+  render();
+}
+document.getElementById('sheetClose').onclick = closeSheet;
+document.getElementById('overlay').addEventListener('click', e=>{ if(e.target.id==='overlay') closeSheet(); });
+
+/* ---------- expense form ---------- */
+function openExpenseForm(editId){
+  const editing = editId ? state.expenses.find(x=>x.id===editId) : null;
+  const catOptions = CATS.map(c=>`<option value="${c}" ${editing&&editing.category===c?'selected':''}>${c}</option>`).join('');
+  const body = `
+    <div class="field"><label>عنوان هزینه یا قبض</label><input id="f_title" placeholder="مثلاً قبض آب مرداد ماه" value="${editing?esc(editing.title):''}"></div>
+    <div class="field-row">
+      <div class="field"><label>دسته</label><select id="f_cat">${catOptions}</select></div>
+      <div class="field"><label>مبلغ کل (تومان)</label><input id="f_amount" type="number" inputmode="numeric" placeholder="0" value="${editing?editing.shares.reduce((s,x)=>s+x.amountDue,0):''}"></div>
+    </div>
+    <div class="field"><label>تاریخ</label>${dateField('f_date', editing?editing.date:todayISO())}</div>
+    <div class="field"><label>نحوه تقسیم بین واحدها</label>
+      <div class="seg">
+        <button type="button" id="f_split_equal" class="active">مساوی</button>
+        <button type="button" id="f_split_pp">به نسبت نفرات</button>
+        <button type="button" id="f_split_manual">دستی</button>
+      </div>
+      <p id="f_splitHint" style="font-size:11.5px; color:var(--ink-faint); line-height:1.8; margin:8px 2px 0;"></p>
+    </div>
+    <div id="f_preview" style="display:none;"></div>
+    <div id="f_manualWrap" style="display:none;"></div>
+    <div class="field"><label>توضیحات (اختیاری)</label><textarea id="f_note">${editing&&editing.note?esc(editing.note):''}</textarea></div>
+    <div class="field-error" id="f_err" style="display:none;"></div>
+    <button class="btn-primary" id="f_save">${editing?'ذخیره تغییرات':'ثبت هزینه'}</button>
+  `;
+  openSheet(editing?'ویرایش هزینه':'ثبت هزینه جدید', body, (root)=>{
+    let splitMode = 'equal';
+    const eqBtn = root.querySelector('#f_split_equal');
+    const ppBtn = root.querySelector('#f_split_pp');
+    const manBtn = root.querySelector('#f_split_manual');
+    const manualWrap = root.querySelector('#f_manualWrap');
+    const preview = root.querySelector('#f_preview');
+    const hint = root.querySelector('#f_splitHint');
+    const amountInput = root.querySelector('#f_amount');
+    const fa = n=> Math.round(n).toLocaleString('fa-IR');
+    // محاسبه سهم هر واحد بر اساس نحوه تقسیم (فقط برای حالت مساوی و به نسبت نفرات)
+    // واحدهای «بدون ساکن» در محاسبات جدید نمی‌آیند
+    const active = state.units.filter(u=>!u.isVacant);
+    function calcShares(amount, mode){
+      const n = active.length;
+      if(mode==='per_person'){
+        const totalPeople = active.reduce((s,u)=>s+u.residents, 0);
+        return active.map(u=>({unitId:u.id, amountDue: totalPeople ? Math.round(amount*u.residents/totalPeople) : 0}));
+      }
+      const per = n ? Math.round(amount/n) : 0;
+      return active.map(u=>({unitId:u.id, amountDue:per}));
+    }
+    function buildManualRows(){
+      const amt = Number(amountInput.value)||0;
+      const per = active.length ? amt/active.length : 0;
+      // واحد بدون ساکن فقط وقتی نشان داده می‌شود که در هزینه‌ی در حال ویرایش سهم داشته باشد
+      const rowsUnits = state.units.filter(u=> !u.isVacant || (editing && editing.shares.some(s=>s.unitId===u.id)));
+      manualWrap.innerHTML = rowsUnits.map(u=>{
+        let v = per;
+        if(editing){ const s = editing.shares.find(x=>x.unitId===u.id); if(s) v = s.amountDue; }
+        return `<div class="field"><label>${esc(u.name)}${u.isVacant?' (بدون ساکن)':''}</label><input type="number" class="manual-share" data-unit="${u.id}" value="${Math.round(v)}"></div>`;
+      }).join('');
+    }
+    function refreshSplitUI(){
+      const amt = Number(amountInput.value)||0;
+      const n = active.length;
+      const totalPeople = active.reduce((s,u)=>s+u.residents, 0);
+      const vacantNote = active.length<state.units.length ? ` (${(state.units.length-active.length).toLocaleString('fa-IR')} واحد بدون ساکن حساب نمی‌شود)` : '';
+      eqBtn.classList.toggle('active', splitMode==='equal');
+      ppBtn.classList.toggle('active', splitMode==='per_person');
+      manBtn.classList.toggle('active', splitMode==='manual');
+      manualWrap.style.display = splitMode==='manual' ? 'block' : 'none';
+      preview.style.display = splitMode==='per_person' ? 'block' : 'none';
+      if(splitMode==='equal'){
+        hint.textContent = `مبلغ کل به ${n.toLocaleString('fa-IR')} واحد مساوی تقسیم می‌شود${amt>0&&n ? ' — سهم هر واحد: '+toman(amt/n) : ''}${vacantNote}.`;
+      } else if(splitMode==='per_person'){
+        hint.textContent = `مبلغ کل بر ${totalPeople.toLocaleString('fa-IR')} نفر (مجموع ساکنین) تقسیم می‌شود و در تعداد نفرات هر واحد ضرب می‌شود${amt>0&&totalPeople ? ' — سهم هر نفر: '+toman(amt/totalPeople) : ''}${vacantNote}.`;
+        const rows = calcShares(amt, 'per_person');
+        preview.innerHTML = '<div class="unit-share" style="margin-bottom:14px;">' + active.map((u,i)=>
+          `<div style="display:flex; justify-content:space-between; font-size:12.5px; padding:5px 0;"><span>${esc(u.name)} <span style="color:var(--ink-faint);">(${u.residents.toLocaleString('fa-IR')} نفر)</span></span><b>${amt>0 ? toman(rows[i].amountDue) : '—'}</b></div>`
+        ).join('') + '</div>';
+      } else {
+        hint.textContent = 'مبلغ هر واحد را خودتان وارد کنید.';
+      }
+    }
+    eqBtn.onclick = ()=>{ splitMode='equal'; refreshSplitUI(); };
+    ppBtn.onclick = ()=>{ splitMode='per_person'; refreshSplitUI(); };
+    manBtn.onclick = ()=>{ splitMode='manual'; buildManualRows(); refreshSplitUI(); };
+    amountInput.addEventListener('input', ()=>{ if(splitMode!=='manual') refreshSplitUI(); });
+
+    if(editing){
+      const total = editing.shares.reduce((s,x)=>s+x.amountDue,0);
+      const matches = mode=> {
+        const calc = calcShares(total, mode);
+        // اگر واحدی که الان بدون ساکن است در این هزینه سهم دارد، حالت دستی نشان داده می‌شود تا مبلغ‌ها حفظ شوند
+        const extra = editing.shares.some(s=> !calc.some(c=>c.unitId===s.unitId) && s.amountDue>0);
+        return !extra && calc.every(c=>{ const s=editing.shares.find(x=>x.unitId===c.unitId); return s && Math.abs(s.amountDue-c.amountDue)<=1; });
+      };
+      if(editing.splitMode==='per_person' && matches('per_person')) splitMode='per_person';
+      else if(matches('equal')) splitMode='equal';
+      else if(matches('per_person')) splitMode='per_person';
+      else { splitMode='manual'; buildManualRows(); }
+    }
+    refreshSplitUI();
+
+    root.querySelector('#f_save').onclick = async ()=>{
+      const title = root.querySelector('#f_title').value.trim();
+      const cat = root.querySelector('#f_cat').value;
+      const amount = Number(root.querySelector('#f_amount').value);
+      const date = root.querySelector('#f_date').dataset.iso;
+      const note = root.querySelector('#f_note').value.trim();
+      const err = root.querySelector('#f_err');
+      if(!title || !amount || amount<=0 || !date){
+        err.textContent = 'عنوان، مبلغ معتبر و تاریخ را وارد کنید.'; err.style.display='block'; return;
+      }
+      if(active.length===0 && splitMode!=='manual'){
+        err.textContent = 'همه‌ی واحدها بدون ساکن هستند؛ حداقل یک واحد باید ساکن داشته باشد.'; err.style.display='block'; return;
+      }
+      let sharesInput;
+      if(splitMode!=='manual' || !manualWrap.querySelector('.manual-share')){
+        sharesInput = calcShares(amount, splitMode==='per_person' ? 'per_person' : 'equal');
+      } else {
+        sharesInput = Array.from(manualWrap.querySelectorAll('.manual-share')).map(inp=>({unitId:inp.dataset.unit, amountDue:Math.round(Number(inp.value)||0)}));
+      }
+      if(editing){
+        const {error:e1} = await sb.from('expenses').update({title, category:cat, date, note, split_mode:splitMode}).eq('id', editing.id);
+        if(e1){ err.textContent='خطا: '+e1.message; err.style.display='block'; return; }
+        for(const si of sharesInput){
+          const existing = editing.shares.find(s=>s.unitId===si.unitId);
+          if(existing){
+            const {error:sE} = await sb.from('expense_shares').update({amount_due:si.amountDue}).eq('id', existing.shareId);
+            if(sE) console.warn('share update:', sE.message);
+          } else {
+            const {error:sE} = await sb.from('expense_shares').insert({expense_id:editing.id, unit_id:si.unitId, amount_due:si.amountDue});
+            if(sE) console.warn('share insert:', sE.message);
+          }
+        }
+      } else {
+        const {data:newExp, error:e1} = await sb.from('expenses').insert({title, category:cat, date, note, split_mode:splitMode, created_by:authUser.id}).select().single();
+        if(e1){ err.textContent='خطا: '+e1.message; err.style.display='block'; return; }
+        const rows = sharesInput.map(si=>({expense_id:newExp.id, unit_id:si.unitId, amount_due:si.amountDue}));
+        const {error:rowsErr} = await sb.from('expense_shares').insert(rows);
+        if(rowsErr){ err.textContent='خطا در ذخیره سهم‌ها: '+rowsErr.message; err.style.display='block'; return; }
+      }
+      await loadAllData();
+      closeSheet(); render();
+    };
+  });
+}
+
+/* ---------- payment form ---------- */
+function openPaymentForm(expenseId, unitId){
+  const e = state.expenses.find(x=>x.id===expenseId);
+  if(!e){ alert("هزینه پیدا نشد."); return; }
+  const s = e.shares.find(x=>x.unitId===unitId);
+  if(!s){ alert("سهم پیدا نشد."); return; }
+  const u = state.units.find(x=>x.id===unitId);
+  const remain = Math.max(0, s.amountDue - s.paidAmount);
+  const methodOptions = METHODS.map(m=>`<option value="${m}">${m}</option>`).join('');
+  const body = `
+    <div class="field"><label>مبلغ پرداختی (تومان)</label><input id="p_amount" type="number" inputmode="numeric" value="${remain}"></div>
+    <div class="field"><label>تاریخ پرداخت</label>${dateField('p_date', todayISO())}</div>
+    <div class="field"><label>روش پرداخت</label><select id="p_method">${methodOptions}</select></div>
+    <div class="field"><label>یادداشت (اختیاری)</label><input id="p_note" placeholder="مثلاً واریز به حساب سرایدار"></div>
+    <div class="field-error" id="p_err" style="display:none;"></div>
+    <button class="btn-primary" id="p_save">ثبت پرداخت</button>
+  `;
+  openSheet('ثبت پرداخت — ' + (u?u.name:''), body, (root)=>{
+    root.querySelector('#p_save').onclick = async ()=>{
+      const amount = Number(root.querySelector('#p_amount').value);
+      const date = root.querySelector('#p_date').dataset.iso;
+      const method = root.querySelector('#p_method').value;
+      const note = root.querySelector('#p_note').value.trim();
+      const err = root.querySelector('#p_err');
+      if(!amount || amount<=0 || !date){ err.textContent='مبلغ و تاریخ را درست وارد کنید.'; err.style.display='block'; return; }
+      const newPaid = Math.round((s.paidAmount||0) + amount);
+      const {error} = await sb.from('expense_shares').update({paid_amount:newPaid, paid_date:date, method, note}).eq('id', s.shareId);
+      if(error){ err.textContent='خطا: '+error.message; err.style.display='block'; return; }
+      await loadAllData();
+      closeSheet(); render();
+    };
+  });
+}
+
+/* ---------- goal form ---------- */
+function openGoalForm(editId){
+  const editing = editId ? state.goals.find(x=>x.id===editId) : null;
+  const body = `
+    <div class="field"><label>عنوان هدف</label><input id="g_title" placeholder="مثلاً نوسازی نمای ساختمان" value="${editing?esc(editing.title):''}"></div>
+    <div class="field"><label>مبلغ هدف (تومان)</label><input id="g_target" type="number" inputmode="numeric" value="${editing?editing.targetAmount:''}"></div>
+    <div class="field"><label>مهلت (اختیاری)</label>${dateField('g_deadline', editing&&editing.deadline?editing.deadline:'', true)}</div>
+    <div class="field"><label>توضیحات (اختیاری)</label><textarea id="g_note">${editing&&editing.note?esc(editing.note):''}</textarea></div>
+    <div class="field-error" id="g_err" style="display:none;"></div>
+    <button class="btn-primary" id="g_save">${editing?'ذخیره تغییرات':'ثبت هدف'}</button>
+  `;
+  openSheet(editing?'ویرایش هدف':'هدف جدید برای آینده', body, (root)=>{
+    root.querySelector('#g_save').onclick = async ()=>{
+      const title = root.querySelector('#g_title').value.trim();
+      const target = Number(root.querySelector('#g_target').value);
+      const deadline = root.querySelector('#g_deadline').dataset.iso || null;
+      const note = root.querySelector('#g_note').value.trim();
+      const err = root.querySelector('#g_err');
+      if(!title || !target || target<=0){ err.textContent='عنوان و مبلغ هدف را درست وارد کنید.'; err.style.display='block'; return; }
+      if(editing){
+        const {error:gE} = await sb.from('goals').update({title, target_amount:target, deadline, note}).eq('id', editing.id);
+        if(gE){ err.textContent='خطا: '+gE.message; err.style.display='block'; return; }
+      } else {
+        const {error:gE} = await sb.from('goals').insert({title, target_amount:target, deadline, note, created_by:authUser.id});
+        if(gE){ err.textContent='خطا: '+gE.message; err.style.display='block'; return; }
+      }
+      await loadAllData();
+      closeSheet(); render();
+    };
+  });
+}
+function openContributionForm(goalId){
+  const g = state.goals.find(x=>x.id===goalId);
+  const body = `
+    <div class="field"><label>مبلغ واریزی (تومان)</label><input id="c_amount" type="number" inputmode="numeric"></div>
+    <div class="field"><label>تاریخ</label>${dateField('c_date', todayISO())}</div>
+    <div class="field"><label>منبع (اختیاری)</label><input id="c_source" placeholder="مثلاً مازاد شارژ ماهانه یا واحد ۳"></div>
+    <div class="field"><label>یادداشت (اختیاری)</label><input id="c_note"></div>
+    <div class="field-error" id="c_err" style="display:none;"></div>
+    <button class="btn-primary" id="c_save">ثبت واریز</button>
+  `;
+  openSheet('ثبت واریز به هدف', body, (root)=>{
+    root.querySelector('#c_save').onclick = async ()=>{
+      const amount = Number(root.querySelector('#c_amount').value);
+      const date = root.querySelector('#c_date').dataset.iso;
+      const source = root.querySelector('#c_source').value.trim();
+      const note = root.querySelector('#c_note').value.trim();
+      const err = root.querySelector('#c_err');
+      if(!amount || amount<=0 || !date){ err.textContent='مبلغ و تاریخ را درست وارد کنید.'; err.style.display='block'; return; }
+      const {error:cE} = await sb.from('goal_contributions').insert({goal_id:g.id, amount, date, source, note});
+      if(cE){ err.textContent='خطا: '+cE.message; err.style.display='block'; return; }
+      await loadAllData();
+      closeSheet(); render();
+    };
+  });
+}
+
+/* ---------- unit forms ---------- */
+function openAddUnit(){
+  const body = `
+    <div class="field"><label>نام واحد</label><input id="u_name" placeholder="مثلاً واحد ۷"></div>
+    <div class="field"><label>نام مالک یا مستأجر (اختیاری)</label><input id="u_owner"></div>
+    <div class="field"><label>تعداد نفرات ساکن</label><input id="u_res" type="number" inputmode="numeric" min="1" max="99" value="1"></div>
+    <div class="field-error" id="u_err" style="display:none;"></div>
+    <button class="btn-primary" id="u_save">افزودن واحد</button>
+  `;
+  openSheet('افزودن واحد جدید', body, (root)=>{
+    root.querySelector('#u_save').onclick = async ()=>{
+      const name = root.querySelector('#u_name').value.trim();
+      const owner = root.querySelector('#u_owner').value.trim();
+      const err = root.querySelector('#u_err');
+      const residents = Math.round(Number(root.querySelector('#u_res').value));
+      if(!name){ err.textContent='نام واحد را وارد کنید.'; err.style.display='block'; return; }
+      if(!(residents>=1 && residents<=99)){ err.textContent='تعداد نفرات باید بین ۱ تا ۹۹ باشد.'; err.style.display='block'; return; }
+      const {error} = await sb.from('units').insert({name, owner, residents});
+      if(error){ err.textContent='خطا: '+error.message; err.style.display='block'; return; }
+      await loadAllData();
+      closeSheet(); render();
+    };
+  });
+}
+function openEditUnit(unitId){
+  const u = state.units.find(x=>x.id===unitId);
+  const body = `
+    <div class="field"><label>نام واحد</label><input id="u_name" value="${esc(u.name)}"></div>
+    <div class="field"><label>نام مالک یا مستأجر</label><input id="u_owner" value="${esc(u.owner||'')}"></div>
+    <div class="field"><label>تعداد نفرات ساکن</label><input id="u_res" type="number" inputmode="numeric" min="1" max="99" value="${u.residents}"></div>
+    <p style="font-size:11.5px; color:var(--ink-faint); line-height:1.8; margin:-6px 0 14px;">تغییر تعداد نفرات فقط روی هزینه‌های بعدی اثر می‌گذارد؛ سهم هزینه‌های ثبت‌شده قبلی تغییر نمی‌کند.</p>
+    <div class="field-error" id="u_err" style="display:none;"></div>
+    <button class="btn-primary" id="u_save">ذخیره تغییرات</button>
+  `;
+  openSheet('ویرایش واحد', body, (root)=>{
+    root.querySelector('#u_save').onclick = async ()=>{
+      const name = root.querySelector('#u_name').value.trim();
+      const owner = root.querySelector('#u_owner').value.trim();
+      const err = root.querySelector('#u_err');
+      const residents = Math.round(Number(root.querySelector('#u_res').value));
+      if(!name){ err.textContent='نام واحد را وارد کنید.'; err.style.display='block'; return; }
+      if(!(residents>=1 && residents<=99)){ err.textContent='تعداد نفرات باید بین ۱ تا ۹۹ باشد.'; err.style.display='block'; return; }
+      const {error:uE} = await sb.from('units').update({name, owner, residents}).eq('id', u.id);
+      if(uE){ err.textContent='خطا: '+uE.message; err.style.display='block'; return; }
+      await loadAllData();
+      closeSheet(); render();
+    };
+  });
+}
+
+/* ---------- settings ---------- */
+document.getElementById('settingsBtn').onclick = async ()=>{
+  if(!authUser) return;
+  const me = state.units.find(u=>u.id===myUnitId);
+  const whoamiRow = `<div class="whoami-bar" style="margin-bottom:16px;"><span>وارد شده به‌عنوان: <b>${esc(me?me.name:'—')}</b></span><button id="s_unit_logout">خروج از حساب</button></div>`;
+
+  const {data: mgrs} = await sb.from('profiles').select('id').eq('is_manager', true).limit(1);
+  const hasManager = mgrs && mgrs.length>0;
+
+  if(isManager){
+    const body = `
+      ${whoamiRow}
+      <div class="field"><label>نام ساختمان</label><input id="s_name" value="${esc(state.buildingName)}"></div>
+      <p style="font-size:12px; color:var(--ink-soft); line-height:1.8;">شما مدیر ساختمان هستید و امکان ثبت و ویرایش اطلاعات را دارید. سایر افراد فقط مشاهده می‌کنند.</p>
+      <div class="field-error" id="s_err" style="display:none;"></div>
+      <button class="btn-primary" id="s_save">ذخیره تغییرات</button>
+      <button class="btn-secondary" id="s_logout">خروج از حالت مدیر (تبدیل به حالت مشاهده)</button>
+    `;
+    openSheet('تنظیمات ساختمان', body, (root)=>{
+      root.querySelector('#s_unit_logout').onclick = logoutUnit;
+      root.querySelector('#s_save').onclick = async ()=>{
+        const name = root.querySelector('#s_name').value.trim() || 'ساختمان من';
+        await sb.from('app_settings').update({building_name:name}).eq('id',1);
+        state.buildingName = name;
+        closeSheet(); render();
+      };
+      root.querySelector('#s_logout').onclick = async ()=>{
+        const {error:rmE} = await sb.rpc('release_manager');
+        if(rmE) console.warn('release_manager:', rmE.message);
+        isManager = false;
+        closeSheet(); render();
+      };
+    });
+    return;
+  }
+
+  const body = `
+    ${whoamiRow}
+    <div class="field"><label>نام ساختمان</label><input value="${esc(state.buildingName)}" disabled></div>
+    <p style="font-size:12px; color:var(--ink-soft); line-height:1.8;">شما در حالت مشاهده هستید و فقط می‌توانید اطلاعات را ببینید.</p>
+    ${!hasManager ? `<button class="btn-primary" id="s_claim">من مدیر ساختمان می‌شوم</button><p style="font-size:11px; color:var(--ink-soft); margin-top:6px;">این ساختمان هنوز مدیری ندارد.</p>` : `<p style="font-size:12px; color:var(--ink-soft);">این ساختمان مدیر دارد. برای تغییر مدیر، مدیر فعلی باید از حالت مدیر خارج شود.</p>`}
+  `;
+  openSheet('تنظیمات', body, (root)=>{
+    root.querySelector('#s_unit_logout').onclick = logoutUnit;
+    const claimBtn = root.querySelector('#s_claim');
+    if(claimBtn) claimBtn.onclick = async ()=>{
+      const {data, error} = await sb.rpc('claim_manager');
+      if(error || !data){ alert('این ساختمان همین الان مدیر پیدا کرد.'); closeSheet(); render(); return; }
+      isManager = true;
+      closeSheet(); render();
+    };
+  });
+};
+
+/* ---------- nav ---------- */
+document.querySelectorAll('.navbtn').forEach(b=> b.onclick = ()=> goTo(b.dataset.tab));
+
+/* ---------- boot ---------- */
+(async function(){
+  // always load units first — needed even for the unit-picker screen
+  await loadAllData();
+  const {data:{session}} = await sb.auth.getSession();
+  if(session){
+    authUser = session.user;
+    await refreshProfile();
+    if(myProfile){ await loadMessages(); subscribeAll(); }
+  }
+  render();
+})();
+</script>
+</body>
+</html>
