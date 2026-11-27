@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shamsi_date/shamsi_date.dart';
+import 'package:shamsi_date/shamsi_date.dart' hide DateFormatter;
 
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/utils/currency_formatter.dart';

@@ -1,4 +1,4 @@
-import 'package:shamsi_date/shamsi_date.dart';
+import 'package:shamsi_date/shamsi_date.dart' hide DateFormatter;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/supabase_constants.dart';
