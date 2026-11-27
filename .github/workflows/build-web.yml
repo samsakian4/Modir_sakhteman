@@ -1,0 +1,26 @@
+name: build-web
+on:
+  workflow_dispatch:
+  push:
+    branches: [flutter-web]
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Create .env from secrets
+        run: |
+          printf 'SUPABASE_URL=%s\nSUPABASE_ANON_KEY=%s\nMAX_ATTACHMENT_SIZE_MB=10\n' "${{ secrets.SUPABASE_URL }}" "${{ secrets.SUPABASE_ANON_KEY }}" > .env
+      - run: flutter pub get
+      - run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - run: flutter test
+      # --no-web-resources-cdn: bundle CanvasKit locally (no gstatic.com — blocked in Iran)
+      - run: flutter build web --release --no-web-resources-cdn --pwa-strategy=offline-first
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web
